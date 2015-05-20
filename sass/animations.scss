@@ -1,0 +1,68 @@
+@import "global-variables";
+
+@include keyframes(gigamacro-attract) {
+	0% {
+		@include opacity(1);
+	}
+	37% {
+		@include opacity(0);
+	}
+	63% {
+		@include opacity(1);
+	}
+}
+
+@include keyframes(fade-in) {
+	from {
+		@include opacity(0);
+	}
+	to {
+		@include opacity(1);
+	}
+}
+
+@include keyframes(fade-in-from-top) {
+	from {
+		@include transform(translate3d(0, -50px, 0));
+		@include opacity(0);
+	}
+	to {
+		@include transform(translate3d(0, 0, 0));
+		@include opacity(1);
+	}
+}
+
+@include keyframes(fade-in-from-bottom) {
+	from {
+		@include transform(translate3d(0, 50px, 0));
+		@include opacity(0);
+	}
+	to {
+		@include transform(translate3d(0, 0, 0));
+		@include opacity(1);
+	}
+}
+
+@include keyframes(pulse) {
+	from {
+		@include opacity(1);
+	}
+	to {
+		@include opacity(.4);
+	}
+}
+
+@include keyframes(gigamacro-border-highlight) {
+	0% {
+		@include box-shadow(0 0 0 8px rgba($text-link, 0));
+	    border: 1px solid $gigamacro-border-color;
+	}
+	50% {
+		@include box-shadow(0 0 0 8px rgba($text-link, 1));
+		border: 1px solid $gigamacro-legend-bg-color;
+	}
+	100% {
+		@include box-shadow(0 0 0 8px rgba($text-link, 0));
+		border: 1px solid $gigamacro-border-color;
+	}
+}

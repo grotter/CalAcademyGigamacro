@@ -1,0 +1,915 @@
+@import "compass/css3";
+@import "compass/utilities";
+@import "compass/css3/user-interface";
+
+@mixin calacademy-transform-origin($x, $y, $z:null) {
+	$myVal: $x $y $z;
+
+	@if $z == null {
+		$myVal: $x $y;
+	}
+
+	// vendor prefixed
+	@each $prefix in browser-prefixes($supported-browsers) {
+		#{$prefix + '-transform-origin'}: $myVal;
+	}
+
+	// no vendor prefix
+	transform-origin: $myVal;
+
+	.lt-ie9 & {
+		-ms-transform-origin: $x $y;
+		transform-origin: $x $y;
+	}
+}
+
+@mixin calc($prop, $val, $valFallback) {
+	// fallback
+	#{$prop}: $valFallback;
+
+	// vendor prefixed
+	@each $prefix in browser-prefixes($supported-browsers) {
+		#{$prop}: $prefix + '-' + calc(#{$val});
+	}
+
+	// no vendor prefix
+	#{$prop}: calc(#{$val});
+}
+
+@mixin form-styles {
+	input,
+	textarea,
+	select {
+		@include appearance(none);
+
+		&[type="checkbox"] {
+			@include appearance(checkbox);
+		}
+
+		&[type="radio"] {
+			@include appearance(radio);
+		}
+
+		@include border-radius(3px);
+		font-family: 'Whitney A', 'Whitney B', Helvetica, Arial, sans-serif;
+		padding: 8px;
+
+		border: 1px solid $line-grey-light;
+		background-color: transparent;
+		color: $body-copy;
+	}
+
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	textarea {
+		line-height: 1.2em;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	select {
+		@include select-styles;
+	}
+
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	textarea,
+	select {
+		&:focus {
+			border: 1px solid $text-link;
+			@include box-shadow(rgba($text-link, 0.6) 0 0 5px);
+		}
+	}
+}
+
+@mixin slideshow-caption {
+	@include box-sizing(border-box);
+	display: block;
+
+	&, * {
+		font-size: $defaultText !important;
+		line-height: $defaultLineHeight !important;
+	}
+
+	color: $white;
+	background-color: rgba(0, 0, 0, .6);
+	padding: $padding / 2;
+	overflow: hidden;
+	width: 100%;
+
+	position: absolute;
+	margin: 0;
+	bottom: 0;
+	z-index: 2;
+}
+
+@mixin gradient-background {
+	&:after {
+		@include background-image(linear-gradient(-175deg, transparent 20%, rgba(0, 0, 0, .85)));
+		position: absolute;
+		content: '';
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: 1;
+	}
+}
+
+@mixin pagination($container, $page, $selected) {
+	#{$container} {
+		word-wrap: break-word;
+		margin-top: $padding * 2;
+		padding: 0;
+		border: none;
+		text-align: center;
+
+		#{$page} {
+			@include text-shadow(none);
+			margin-left: $padding / 2;
+			margin-right: $padding / 2;
+
+			text-decoration: none;
+			font-weight: $semibold;
+			color: $text-link;
+		}
+
+		#{$selected} {
+			padding: 10px;
+			padding-left: 15px;
+			padding-right: 15px;
+
+			border: 0;
+			color: $black;
+			background-color: $paler-grey;
+		}
+
+		#{$page},
+		#{$selected} {
+			display: inline-block;
+			margin-bottom: 5px;
+			font-size: $biggerText !important;
+		}
+	}
+}
+
+@mixin zoom-image($initFade:true) {
+	overflow: hidden;
+
+	a {
+		&, img {
+			-webkit-touch-callout: none;
+			@include user-select(none);
+		}
+
+		img {
+			width: 100% !important;
+			z-index: 1;
+
+			@include transition(
+				transform 0.7s ease,
+				opacity 0.6s ease
+			);
+
+			@if ($initFade) {
+				.zoom & {
+					@include opacity(0);
+					@include transform(scale(1.05));
+				}
+			}
+			@else {
+				.zoom & {
+					@include transform(scale(1));
+				}
+			}
+
+			&.loaded {
+				@include opacity(1);
+				@include transform(scale(1));
+			}
+		}
+
+		.zoom.no-touch &:hover,
+		.zoom.touch &:active {			
+			@include opacity(1);
+
+			img {
+				@include transform(scale(1.05));
+			}
+		}
+	}
+}
+
+@mixin section-menus($suffixes, $hideAlerts:true){
+	@if ($hideAlerts) {
+		// hide desktop & tablet alerts since it conflicts with the title
+		.alerts {
+			display: none;
+
+			&.clone {
+				display: block;
+			}
+		}
+	}
+
+	// nav adjustments
+	#top-level-nav-wrapper {
+		#top-level-nav {
+			.region-header {
+				#block-menu-menu-menu-top-level {
+					@each $suffix in $suffixes {
+						a.calacademy-menu-#{$suffix} {
+							@include opacity(.6);
+						}
+					}
+				}
+
+				.subsection-titles {
+					display: block;
+
+					ul {
+						@each $suffix in $suffixes {
+							li.calacademy-menu-#{$suffix} {
+								display: block;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+@mixin play-button($zIndex: auto) {
+	// play button on video thumbnails
+	position: relative;
+
+	a.video:before {
+		@include box-sizing(border-box);
+		position: absolute;
+		content: '';
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: $zIndex;
+		pointer-events: none;
+
+		@include opacity(.75);
+		background-repeat: no-repeat;
+		background-position: center 48%;
+
+		@include background-image-retina('play-button-small', png, 40px, 44px);
+
+		@include respond-to(desktop) {
+			@include background-image-retina('play-button', png, 65px, 72px);
+		}
+	}
+}
+
+@mixin exposed-filter-last-element($paddingRight: 75px) {
+	// non-smartphone preloader
+	background-repeat: no-repeat;
+	background-position: -9999px -9999px;
+	@include background-image-retina(loader/30, gif, 30px, 30px);
+
+	.ajax-loading & {
+		padding-right: $paddingRight;
+		background-position: right 0;
+
+		@include respond-to(smartphone) {
+			padding-right: 0;
+			background: none;
+		}
+	}
+}
+
+@mixin hyphy {
+	-webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    hyphens: auto;
+
+	@include word-break(break-all);
+	word-break: break-word;
+}
+
+@mixin subhead-mini {
+	color: $black;
+	font-weight: $medium;
+	font-size: $headerTextReduced;
+	line-height: $headerTextReducedLineHeight;
+
+	@include respond-to(smartphone) {
+		font-size: $sectionTitleSmartphone;
+		line-height: $sectionTitleSmartphoneLineHeight;
+	}
+}
+
+@mixin subhead($bottomMargin: true) {
+	color: $black;
+	font-weight: $medium;
+	font-size: $largeText;
+	line-height: $largeTextLineHeight;
+
+	@include respond-to(smartphone) {
+		font-size: $sectionTitleSmartphone;
+		line-height: $sectionTitleSmartphoneLineHeight;
+	}
+
+	@if ($bottomMargin) {
+		margin-bottom: $padding;
+
+		@include respond-to(smartphone) {
+			margin-bottom: $smartphonePadding;
+		}
+	}
+}
+
+@mixin two-column-layout {
+	// general layout
+	.panel-col-first,
+	.right-rail {
+		@include box-sizing(border-box);
+	}
+
+	.panel-col-first {
+		padding-right: $padding;
+		width: 75%;
+	}
+
+	.right-rail {
+		width: 25%;
+	}
+
+	@include respond-to(smartphone) {
+		.panel-col-first,
+		.right-rail {
+			padding-right: 0;
+			width: 100%;
+		}
+	}
+}
+
+@mixin select-appearance {
+	@include appearance(none);
+
+	// browser hacks
+	&::-ms-expand {
+    	display: none;
+	}
+
+	@include no-focus-border;
+	text-indent: 0.01px;
+	text-overflow: '';
+}
+
+@mixin select-styles {
+	@include select-appearance;
+	@include hand-cursor;
+	@include box-sizing(border-box);
+	@include border-radius(3px);
+
+	$arrowWidth: 32px;
+	min-width: 175px;
+	padding-right: $arrowWidth + 8;
+
+	@include background-image-retina(select-arrow-blue, png, $arrowWidth, 9px);
+	background-repeat: no-repeat;
+	background-position: right center;
+	background-color: $white;
+
+	// < IE 10 can't remove the default drop down arrow
+	.lt-ie10 & {
+		background-image: none;
+		padding-right: 8px;
+	}
+
+	&:focus {
+		border: 1px solid $text-link;
+		@include box-shadow(rgba($text-link, 0.6) 0 0 5px);
+	}
+}
+
+@mixin embiggen-highlight-text {
+	h3,
+	.views-field-title,
+	.views-field-name {
+		font-size: $slightlyLargerHeaderText;
+		line-height: $slightlyLargerHeaderTextLineHeight;
+	}
+
+	h3,
+	.views-field-title,
+	.views-field-name,
+	.views-field-field-summary,
+	.views-field-body,
+	.views-field-description {
+		@include respond-to(smartphone) {
+			font-size: $smartphoneText;
+			line-height: $smartphoneLineHeight;
+		}
+	}
+}
+
+@mixin position-sticky($top) {
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: sticky;
+	top: $top;
+}
+
+@mixin selection {
+    //
+    ::-moz-selection { @content; }
+    ::selection { @content; }
+}
+
+@mixin disable-link {
+	pointer-events: none;
+	cursor: default;
+}
+
+@mixin top-aligned-rows {
+	clear: none;
+	float: none;
+	display: inline-block;
+	vertical-align: top;
+	position: relative !important;
+}
+
+@mixin right-rail-border($color: $line-grey-dark) {
+	border-top: 2px solid $color;
+	padding-top: $padding;
+}
+
+@mixin arrow($filePrefix, $large: false, $medium: false, $left: false) {
+	@include box-sizing(border-box);
+	padding-top: 1px;
+	background-repeat: no-repeat;
+	
+	@if $left {
+		background-position: left center;
+	}
+	@else {
+		background-position: right center;
+	}
+
+	$prop: padding-right;
+
+	@if $left {
+		$prop: padding-left;
+	}
+
+	@if $large {
+		@include background-image-retina($filePrefix, png, 30px, 30px);
+		#{$prop}: 40px;
+	}
+	@else if $medium {
+		@include background-image-retina($filePrefix, png, 20px, 20px);
+		#{$prop}: 25px;
+	}
+	@else {
+		@include background-image-retina($filePrefix, png, 15px, 15px);
+		#{$prop}: 20px;
+	}
+}
+
+@mixin title-link($arrowColor, $weight: $semibold) {
+	font-size: 17px;
+	font-weight: $weight;
+
+	a {
+		@include arrow('arrow-' + $arrowColor);
+	}
+
+	@include respond-to(smartphone) {
+		font-size: $smartphoneText;
+		line-height: $smartphoneLineHeight;
+	}
+}
+
+@mixin testimonial-icon($filePrefix) {
+	@include background-image-retina($filePrefix, png, 20px, 20px);
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-right: 25px;
+}
+
+@mixin cta-button {
+	@include background-image(linear-gradient(#ed902b, #e26125));
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ed902b', endColorstr='#e26125', GradientType=0);
+	background-position: 0 0;
+
+	@include box-shadow(rgba(0, 0, 0, .2) 1px 1px 1px);
+	@include border-radius(3px);
+
+	padding: $smartphonePadding !important;
+	padding-top: $smartphonePadding - 5px !important;
+	padding-bottom: $smartphonePadding - 3px !important;
+
+	/*
+	font-size: 17px;
+
+	@include respond-to(smartphone) {
+		font-size: $smartphoneText;
+	}
+	*/
+
+	&, a {
+		font-size: 16px;
+
+		@include respond-to(smartphone) {
+			font-size: $smartphoneText;
+		}
+	}
+
+	a {
+		display: block;
+		color: $white;
+		font-weight: $medium;
+		@include arrow('arrow');
+	}
+}
+
+@mixin cta-button-ab-exp-alt {
+	@include opacity(1);
+	@include background-image(linear-gradient(#e04e01, #e04e01));
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e04e01', endColorstr='#e04e01', GradientType=0);
+	background-position: 0 0;
+	box-shadow: none !important;
+	@include border-radius(5px);
+	border: $nav-border;
+	padding: $smartphonePadding !important;
+	padding-top: $smartphonePadding - 5px !important;
+	padding-bottom: $smartphonePadding - 3px !important;
+	
+	&, a {
+		font-size: 18px;
+		@include respond-to(smartphone) {
+			font-size: $smartphoneText +2px;
+			padding: $smartphonePadding !important;
+			padding-top: $smartphonePadding - 4px !important;
+			padding-bottom: $smartphonePadding - 2px !important;
+			padding-right: $smartphonePadding + 8px !important;
+			padding-left: $smartphonePadding - 2px !important;
+		}
+	}
+
+	a {
+		display: block;
+		color: $white;
+		font-weight: $medium;
+		@include arrow('arrow');
+	}
+	
+	@include respond-to(desktop) {
+		&:hover {
+			a {
+				color: $international-orange;
+				@include arrow('arrow-orange');
+				@include opacity(1);
+			}
+			@include opacity(1);
+			@include background-image(linear-gradient(#fff, #fff));
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#fff', GradientType=0);
+		}
+	}
+}
+
+@mixin cta-block($bgColor) {
+	background-color: $bgColor;
+	margin: 0;
+
+	a {
+		display: block;
+		color: $white;
+		padding: $padding;
+
+		@include background-image-retina(arrow-large, png, 30px, 30px);
+		background-repeat: no-repeat;
+
+		$bottomPos: $squareWidth - (30 + $padding);
+		background-position: $padding $bottomPos;
+
+		@include respond-to(tablet) {
+			$bottomPos: $squareWidthTablet - (30 + $padding);
+			background-position: $padding $bottomPos;
+		}
+	}
+
+	&, a {
+		@include box-sizing(border-box);
+		width: $squareWidth;
+		height: $squareWidth;
+		font-weight: $light;
+
+		font-size: $headerTextReduced;
+		line-height: $headerTextReducedLineHeight;
+
+		@include respond-to(tablet) {
+			width: $squareWidthTablet;
+			height: $squareWidthTablet;
+
+			font-size: $largeText;
+			line-height: $largeTextLineHeight - 3px;
+		}
+
+		@include respond-to(smartphone) {
+			width: 100%;
+			height: inherit;
+
+			a {
+				font-size: $largeText;
+				line-height: $largeTextLineHeight;
+				padding: 0;
+				@include background-image-retina(arrow, png, 15px, 15px, smartphone);
+				background-position: right center;
+			}
+		}
+	}
+
+	& > * {
+		padding: 0;
+
+		@include respond-to(smartphone) {
+			padding: $padding;
+		}
+	}
+}
+
+@mixin no-focus-border {
+	outline: none;
+
+	&::-moz-focus-inner {
+		border: 0;
+	}
+
+	&:-moz-focusring {
+    	color: transparent;
+    	text-shadow: 0 0 0 #000;
+	}
+}
+
+@mixin hide-text-calacademy {
+	@include hide-text;
+	display: block;
+	line-height: 0;
+}
+
+@mixin hand-cursor {
+	cursor: hand;
+	cursor: pointer;
+}
+
+@mixin initialize-fade($initialOpacity) {
+	// @see
+	// http://stackoverflow.com/questions/7947385/hovering-over-css-transition-in-safari-lightens-certain-font-color
+	-webkit-transform: translateZ(0);
+
+	@include transition(opacity 300ms ease-out);
+	@include opacity($initialOpacity);
+}
+
+@mixin text-box($bgColor, $textColor, $linkColor) {
+	@include box-sizing(border-box);
+
+	$size: ($squareWidth * 2) + ($padding * 3);
+	$tabletSize: ($squareWidthTablet * 2) + ($padding * 3);
+
+	width: $size;
+	min-height: $size;
+	border: $padding solid $white;
+	padding: $padding;
+	background-color: $bgColor;
+
+	&, .field, p {
+		font-weight: $book;
+		color: $textColor !important;
+
+		font-size: $headerTextReduced;
+		line-height: 44px;
+
+		@include respond-to(tablet) {
+			font-size: $sectionTitleSmartphone;
+			line-height: $sectionTitleSmartphoneLineHeight;
+		}
+
+		a {
+			color: $linkColor !important;
+			text-decoration: none;
+		}
+	}
+
+	p {
+		padding: 0;
+		margin: 0;
+	}
+
+	@include respond-to(tablet) {
+		width: $tabletSize;
+		min-height: $tabletSize;
+	}
+
+	@include respond-to(smartphone) {
+		width: 100%;
+		min-height: inherit;
+		border: 0;
+		margin: 0;
+		padding: $smartphonePadding;
+
+		&, .field, p {
+			font-size: $largeText;
+			line-height: $largeTextLineHeight;
+		}
+	}
+}
+
+@mixin respond-to($media) {
+	@if $media == smartphone {
+		@media only screen
+		and (min-width: $breakSmartphone)
+		and (max-width: $breakTablet - 1) {
+			@content;
+		}
+	}
+	@if $media == smartphone-portrait {
+		@media only screen
+		and (min-width: $breakSmartphone)
+		and (max-width: $breakTablet - 1)
+		and (orientation: portrait) {
+			@content;
+		}
+	}
+	@if $media == smartphone-landscape {
+		@media only screen
+		and (min-width: $breakSmartphone)
+		and (max-width: $breakTablet - 1)
+		and (orientation: landscape) {
+			@content;
+		}
+	}
+	@else if $media == tablet {
+		@media only screen
+		and (min-width: $breakTablet)
+		and (max-width: $breakDesktop) {
+			@content;
+		}
+	}
+	@else if $media == tablet-portrait {
+		@media only screen
+		and (min-width: $breakTablet)
+		and (max-width: $breakDesktop)
+		and (orientation: portrait) {
+			@content;
+		}
+	}
+	@else if $media == tablet-landscape {
+		@media only screen
+		and (min-width: $breakTablet)
+		and (max-width: $breakDesktop)
+		and (orientation: landscape) {
+			@content;
+		}
+	}
+	@else if $media == desktop {
+		@media only screen
+		and (min-width: $breakDesktop + 1) {
+			@content;
+		}
+	}
+}
+
+@mixin background-image-retina($file, $type, $width, $height, $media:null, $withComma:false) {
+	// swap to hi-res image
+	background-image: url($assetPath + '/' + $file + '.' + $type);
+
+	@media
+	only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (-moz-min-device-pixel-ratio: 1.5),
+	only screen and (-o-min-device-pixel-ratio: 1.5/1),
+	only screen and (min-device-pixel-ratio: 1.5),
+	only screen and (min-resolution: 144dpi),
+	only screen and (min-resolution: 1.5dppx) {
+		& {
+			background-image: url($assetPath + '/' + $file + '@2x.' + $type);
+		}
+	}
+
+	// background size
+	$condition: "only screen and (min-width: 0)"; // default
+
+	@if $media == smartphone {
+		$condition: "only screen and (min-width: " + $breakSmartphone + ") and (max-width:" + ($breakTablet - 1) + ")";
+	}
+	@else if $media == tablet {
+		$condition: "only screen and (min-width: " + $breakTablet + ") and (max-width:" + $breakDesktop + ")";
+	}
+	@else if $media == desktop {
+		$condition: "only screen and (min-width: " + ($breakDesktop + 1) + ")";
+	}
+
+	@media
+	#{$condition} {
+		& {
+			@if $withComma {
+				@include background-size($width, $height);
+			}
+			@else {
+				@include background-size($width $height);
+			}
+		}
+	}
+}
+
+@mixin follow-buttons($suffix:'') {
+	$socialWidth: 25px;
+	$socialWidthSmartphone: 35px;
+
+	a {
+		@include hide-text-calacademy;
+		background-repeat: no-repeat;
+
+		width: $socialWidth;
+		height: $socialWidth;
+
+		@include respond-to(smartphone) {
+			width: $socialWidthSmartphone;
+			height: $socialWidthSmartphone;
+		}
+	}
+
+	.facebook a {
+		@include background-image-retina('social/facebook' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/facebook-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+
+	.google a {
+		@include background-image-retina('social/google' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/google-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+
+	.instagram a {
+		@include background-image-retina('social/instagram' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/instagram-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+
+	.twitter a {
+		@include background-image-retina('social/twitter' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/twitter-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+
+	.flickr a {
+		@include background-image-retina('social/flickr' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/flickr-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+
+	.youtube a {
+		@include background-image-retina('social/youtube' + $suffix, png, $socialWidth, $socialWidth);
+		@include background-image-retina('social/youtube-large' + $suffix, png, $socialWidthSmartphone, $socialWidthSmartphone, smartphone);
+	}
+}
+
+@mixin submit-button-container {
+	input {
+		@include appearance(none);
+		background-color: transparent;
+		margin: 0;
+		padding: 0;
+		color: $white;
+		text-align: left;
+		width: 100%;
+		font-weight: $medium;
+		font-size: $slightlyLargerText;
+		line-height: 1;
+		border: 0;
+
+		&,
+		&:focus,
+		&::-moz-focus-inner {
+			outline: none;
+		}
+
+		@include background-image-retina(arrow, png, 15px, 15px);
+		background-repeat: no-repeat;
+		background-position: right 0;
+
+		.no-touch &:hover {
+			@include opacity(.6);
+		}
+	}
+
+	@include box-sizing(border-box);
+	@include cta-button;
+	padding: 10px !important;
+	border: 0;
+}

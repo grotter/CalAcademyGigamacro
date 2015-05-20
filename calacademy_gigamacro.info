@@ -1,0 +1,6 @@
+name = CalAcademy Gigamacro
+description = Some code for viewing and managing Gigamacro specimens 
+dependencies[] = libraries
+package = CalAcademy
+core = 7.x
+php = 5.2

@@ -1,0 +1,1114 @@
+@import "global-variables";
+
+html, body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.node-type-gigamacro-specimen {
+	$padding: 35px;
+	$easing: cubic-bezier(.215, .61, .355, 1);
+
+	svg {
+		.fill,
+		.stroke {
+			@include transition(
+				transform .25s $easing,
+				fill .25s $easing
+			);
+
+			@include calacademy-transform-origin(center, center);
+		}
+		
+		.fill {
+			@include transform(scale3d(1, 1, 1));
+			fill: $gigamacro-icon-fill;	
+		}
+		.stroke {
+			fill: $gigamacro-icon-stroke;
+		}
+		.icon {
+			display: none;
+		}
+
+		.web & {
+			.fill,
+			.stroke {
+				fill: $text-link;
+			}
+		}
+	}
+
+	@mixin pointer-button-active($w, $xOffset: 0, $yOffset: 0) {
+		&.active {
+			svg {
+				.fill {
+					$s: $w / ($w - 8);
+					@include transform(scale3d(($s + $xOffset), ($s + $yOffset), 1));
+				}
+			}
+		}
+	}
+
+	.zoom-button,
+	.close {
+		@include pointer-button-active(40);
+	}
+
+	#legend .return {
+		@include pointer-button-active(34);
+	}
+
+	.control-reset {
+		@include pointer-button-active(98, 0, .05);
+
+		.svg-buttons {
+			display: none;
+		}
+	}
+
+	.disabled {
+		pointer-events: none;
+		cursor: default;
+
+		svg {
+			.fill {
+				fill: #b7b7b7;
+			}
+			.stroke {
+				fill: #d6d6d6;
+
+				.web & {
+					fill: #b7b7b7;
+				}
+			}
+		}
+	}
+
+	#leaflet-map-container {
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+
+	.no-animation {
+		@include transition(none !important);
+	}
+
+	.leaflet-container,
+	.slider-container,
+	.leaflet-control-zoom,
+	.control-reset,
+	#smartphone-legend,
+	#legend,
+	#bubble,
+	#gigamacro-sharing {
+		&, * {
+    		-webkit-touch-callout: none;
+			@include user-select(none);
+    	}
+	}
+
+	.web & {
+		#legend,
+		#bubble {
+			&, * {
+				@include user-select(text);
+			}
+		}
+	}
+
+	background-repeat: no-repeat;
+	background-position: center center;
+	@include background-image-retina(loader/50, gif, 50px, 50px);
+
+	#top-level-nav-wrapper,
+	header,
+	.tabs,
+	footer,
+	.leaflet-control-attribution,
+	#content > article,
+	#content > #main-content {
+		display: none;
+	}
+
+	// animation optimization
+	.calacademy-pin div,
+	.calacademy-pin .stroke,
+	.calacademy-pin .shadow {
+		@include transform(translateZ(0));
+	}
+
+	.leaflet-container img {
+		overflow: hidden;
+	}
+
+	#content {
+		padding: 0;
+		overflow: hidden;
+		position: absolute;
+		width: 100%;
+		max-width: inherit;
+	    top: 0;
+	    bottom: 0;
+	    left: 0;
+	    right: 0;
+	    top: $navHeight;
+
+	    @include respond-to(smartphone) {
+	    	top: $smartphoneNavHeight;
+	    	overflow: visible;
+	    }
+
+	    // override some leaflet css for a slower zoom animation
+	    .slow-zoom & {
+	    	.leaflet-zoom-anim {
+				.leaflet-zoom-animated {
+					@include transition(
+						transform 1.1s cubic-bezier(0,0,0.25,1)
+					);
+				}
+			}
+	    }
+
+	    // typography
+	    #legend .return,
+    	.scientific_name,
+    	.dynamic,
+    	.control-reset {
+    		font-size: 20px;
+    		line-height: 30px;
+    	}
+
+    	// pull quotes
+    	p.pullquote:first-letter {
+			margin-left: -8px;
+
+			.web & {
+				margin-left: -6px;
+			}
+
+			@include respond-to(smartphone) {
+				margin-left: 0 !important;
+			}
+		}
+
+    	// e.g. "Distribution"
+    	.details strong {
+    		font-weight: $medium;
+    	}
+
+		.common_name {
+    		font-weight: $medium;
+    	}
+    	.scientific_name {
+    		font-weight: $book;
+    	}
+
+	    .web & {
+	    	#legend .common_name {
+	    		font-size: 20px;
+    			line-height: 30px;
+    			letter-spacing: 0;
+	    	}
+
+			#legend .return,
+			.dynamic {
+				font-size: $slightlyLargerText;
+				line-height: $slightlyLargerTextLineHeight;	
+			}
+		}
+
+    	.commenter {
+    		font-size: 15px;
+    		line-height: 20px;
+    	}
+
+	    #bubble,
+	    #legend,
+	    .slider-container {
+	    	background-color: $gigamacro-legend-bg-color;
+	    	border: 1px solid $gigamacro-border-color;
+	    }
+
+	    #bubble,
+	    #legend {
+	    	cursor: default;
+	    	overflow: hidden;
+
+			@include transition(
+				height .6s $easing
+			);
+
+	    	.dynamic {
+	    		@include transition(
+	    			opacity 1.5s $easing .1s
+	    		);
+
+	    		.pin_stuff {
+	    			display: block;
+
+	    			&:empty,
+	    			&.empty {
+	    				display: none;
+	    			}
+	    		}
+
+				.details {
+		    		margin-top: $padding;
+		    		margin-bottom: $padding;
+		    	}
+
+		    	.commenter {
+		    		margin-top: 20px;
+
+		    		.name {
+		    			font-weight: $semibold;
+		    		}
+		    	}
+	    	}
+	    }
+
+	    #bubble {
+	    	@include box-sizing(border-box);
+	    	@include border-top-left-radius(50px);
+	    	@include border-bottom-right-radius(50px);
+
+	    	position: absolute;
+	    	z-index: 5;	    	
+	    	
+	    	right: 15%;
+	    	width: 30%;
+	    	max-width: 550px;
+
+	    	@include respond-to(tablet) {
+	    		right: 13%;
+	    	}
+
+	    	padding: $padding;
+	    	overflow: visible;
+	    	pointer-events: none;
+	    	@include opacity(0);
+	    	
+	    	$bubbleTop: 200px;
+	    	$bubbleTopOffset: 30px;
+	    	
+	    	top: $bubbleTop + $bubbleTopOffset;
+
+	    	@include transition(
+	    		opacity .5s $easing,
+	    		height .6s $easing,
+	    		top .7s $easing,
+	    		transform .7s $easing
+	    	);
+
+	    	&.show {
+	    		@include opacity(1);
+	    		pointer-events: auto;
+	    		top: $bubbleTop;
+	    	}
+
+	    	.csstransforms3d & {
+	    		top: auto !important;
+	    		@include transform(translate3d(0, $bubbleTop + $bubbleTopOffset, 0));
+
+	    		&.show {
+	    			@include transform(translate3d(0, $bubbleTop, 0));
+	    		}
+	    	}
+
+    		&.highlight {
+    			@include animation(gigamacro-border-highlight 1s $easing);
+    		}
+
+    		.close {
+    			z-index: 6;
+    			position: absolute;
+    			right: -20px;
+    			top: -20px;
+
+    			width: 40px;
+    			height: 40px;
+    			@include hand-cursor;
+    			@include transform(rotate(45deg));
+    			@include calacademy-transform-origin(center, center);
+
+    			.vertical,
+    			.horiz {
+    				display: block;
+    			}
+    		}
+
+    		.dynamic {
+	    		.details {
+	    			margin: 0;
+	    			padding: 0;
+	    		}
+    		}
+	    }
+
+	    // for dev only, use "?classes=leaf-ref"
+	    #leaf-ref {
+	    	z-index: 9999999;
+	    	@include opacity(.5);
+
+	    	position: absolute;
+	    	left: $padding;
+	    	width: 360px;
+	    	height: 829px;
+	    	background-image: url($assetPath + '/gigamacro/leaf.svg');
+	    }
+
+	    #legend {
+	    	#chevron {
+	    		display: none;
+	    	}
+
+	    	@include animation(fade-in-from-top .6s $easing);
+	    	@include border-top-right-radius(305px 220px);
+	    	@include border-bottom-left-radius(305px 220px);
+	    	
+	    	top: -50px;
+	    	padding-top: 50px;
+	    	padding-bottom: 160px;
+
+	    	position: absolute;
+	    	z-index: 2;
+	    	left: $padding;
+	    	width: 360px;
+
+	    	.web & {
+	    		width: 280px;
+
+	    		@include respond-to(tablet) {
+	    			width: 250px;
+	    		}
+
+	    		top: 0;
+	    		left: 0;
+	    		padding: 0;
+	    		border-top: 0;
+	    		border-left: 0;
+
+	    		.details {
+	    			margin-top: 20px;
+	    		}
+	    	}
+
+	    	.return {
+	    		@include box-sizing(border-box);
+	    		@include hand-cursor;
+	    		overflow: hidden;
+	    		width: 100%;
+
+	    		margin: 0;
+	    		padding: $padding;
+
+	    		svg,
+	    		.text-container {
+	    			float: left;
+	    		}
+
+	    		svg {
+	    			.arrow {
+	    				display: block;
+	    			}
+	    		}
+
+	    		.text-container {
+	    			padding-left: 10px;
+	    			padding-top: 6px;
+	    			padding-bottom: 8px;
+	    			font-weight: $medium;
+	    			line-height: 1;
+	    			color: $gigamacro-blue;
+	    		}
+
+	    		.web & {
+	    			background-color: $white;
+	    			padding-top: 20px;
+	    			padding-bottom: 20px;
+	    			margin-bottom: 20px;
+	    			border-bottom: 1px solid $gigamacro-border-color;
+
+	    			svg {
+	    				display: none;
+	    			}
+
+	    			.text-container {
+	    				padding: 0;
+	    				@include arrow(arrow-blue-left, false, false, true);
+	    				color: $text-link;
+	    			}	
+	    		}
+
+	    		.web.no-touch &:hover,
+	    		.web.touch &:active {
+	    			@include opacity(.6);
+	    		}
+	    	}
+
+	    	// only show on smartphones
+	    	.dynamic .return {
+	    		display: none;
+	    	}
+
+	    	h1, h2, .dynamic {
+	    		margin: 0;
+	    		margin-left: $padding;
+	    		margin-right: $padding;
+	    	}
+
+	    	& > *:empty,
+	    	.empty,
+	    	.commenter *:empty,
+	    	.pin_stuff {
+	    		display: none;
+	    	}
+
+	    	.common_name {
+	    		clear: both;
+	    		font-size: 3em;
+	    		letter-spacing: -1px;
+	    		line-height: 1.1em;
+	    		color: $gigamacro-blue;
+	    	}
+
+	    	.scientific_name {
+	    		font-style: italic;
+	    		margin-top: 3px;
+	    	}
+
+	    	.web & {
+	    		.common_name {
+	    			color: $text-link;
+    				font-size: $largeText;
+    				line-height: $largeTextLineHeight;
+	    		}
+
+	    		.scientific_name {
+	    			font-size: $slightlyLargerText;
+	    			line-height: $slightlyLargerTextLineHeight;
+	    			margin-top: -3px;
+	    		}
+	    	}
+	    }
+
+	    .web & {
+	    	#legend,
+	    	#bubble {
+	    		@include border-radius(0);
+	    	}
+	    }
+
+		.leaflet-control-zoom {
+	    	margin-right: $padding;
+			margin-top: $padding;
+			border: none !important;
+
+			display: none;
+	    }
+
+	    .slider-container {
+	    	@include animation(fade-in-from-bottom .6s $easing);
+	    	// @include transform(rotate(180deg));
+
+	    	position: absolute;
+	    	z-index: 3;
+	    	left: 0;
+	    	right: 0;
+	    	bottom: 36px;
+
+	    	margin-left: auto;
+	    	margin-right: auto;
+	    	width: 48%;
+
+	    	@include respond-to(tablet) {
+	    		width: 40%;
+	    	}
+
+	    	padding: 10px;
+	    	@include border-radius(30px);
+
+	    	.zoom-button,
+	    	#slider {
+	    		float: left;
+
+	    		&.zoom-button {
+	    			line-height: 0;
+
+	    			.horiz {
+	    				display: block;
+	    			}
+	    		}
+
+	    		&.zoom-in {
+	    			float: right;
+
+	    			.vertical {
+	    				display: block;
+	    			}
+	    		}
+	    	}
+
+	    	.zoom-button {
+	    		@include hand-cursor;
+	    		z-index: 3;
+	    		position: relative;
+	    		margin: 0 !important;
+	    	}
+
+	    	#slider,
+	    	#slider-bg {
+	    		@include calc(width, (100% - #{130px}), 70%);
+	    		position: absolute;
+	    		left: 0;
+	    		right: 0;
+	    		margin-left: auto;
+	    		margin-right: auto;
+	    	}
+
+	    	#slider-bg {
+	    		z-index: 1;
+
+	    		pointer-events: none;
+	    		background-color: #ebebeb;
+	    		border: 1px solid #e0e0e0;
+	    		height: 5px;
+	    		top: 25px;
+	    		@include border-radius(3px);
+	    	}
+
+	    	#slider {
+	    		z-index: 2;
+
+	    		@include hand-cursor;
+	    		height: 100%;
+	    		top: 0;
+	    		bottom: 0;
+
+	    		border: none;
+	    		background-color: transparent;
+
+	    		span {
+	    			@include transition(
+	    				transform .4s $easing,
+	    				left .4s $easing
+	    			);
+
+	    			border: 0;
+	    			@include border-radius(0);
+	    			@include hand-cursor;
+
+	    			background-color: transparent;
+	    			// background-color: rgba(green, .5);
+	    			
+	    			padding: 30px;
+	    			padding-left: 0;
+	    			top: -12px;
+	    			
+	    			div {
+	    				position: absolute;
+	    				top: 26px;
+	    				left: 0;
+		    			height: 30px;
+		    			width: 10px;
+		    			@include border-radius(5px);
+		    			background-color: $gigamacro-icon-fill;
+
+		    			.web & {
+		    				background-color: $text-link;	
+		    			}
+	    			}
+	    		}
+	    	}
+	    }
+
+	    #fingers {
+	    	.no-touch & {
+	    		display: none;
+	    	}
+
+	    	.floor & {
+	    		display: block;
+	    	}
+
+	    	z-index: 4;
+	    	position: absolute;
+	    	color: #b9b9b9;
+	    	font-weight: $book;
+	    	font-size: 22px;
+		    pointer-events: none;
+
+		    top: 50%;
+		    @include calc(left, (50% + #{280px}), 70%);
+		    @include transform(translateY(-50%));
+
+		    @include respond-to(tablet) {
+		    	@include calc(left, (50% + #{180px}), 60%);
+		    }
+
+		    // fade in/out
+		    @include transition(
+	    		opacity .4s ease-in
+	    	);	
+
+		    @include opacity(0);
+
+		    div {
+		    	height: 100px;
+		    	padding-top: 55px;
+	    		padding-left: 100px;
+		    	background-repeat: no-repeat;
+		    	background-image: url($assetPath + '/gigamacro/fingers.svg');
+
+		    	// pulse
+		    	&.pulse {
+		    		@include animation(pulse .8s ease-in infinite alternate);
+		    	}
+		    }
+	    }
+
+		.control-reset {
+			width: 98px;
+			height: 60px;
+
+			.text-container {
+				position: absolute;
+				z-index: 2;
+				color: $white;
+
+				width: 100%;
+				left: 0;
+				top: 20px;
+				line-height: 1;
+				text-align: center;
+			}
+
+			z-index: 997;
+			position: absolute;
+			top: $padding;
+			right: $padding;
+			
+			@include hand-cursor;
+			@include animation(fade-in-from-top .6s $easing);
+
+			.web & {
+				.svg-reset {
+					display: none;
+				}
+				
+				width: auto;
+				height: auto;
+				background-color: $text-link;
+
+				.text-container {
+					position: relative;
+					top: 0 !important;
+					width: auto;
+
+					padding: $padding;
+					padding-top: $padding - 15px;
+					padding-bottom: $padding - 15px;
+				}
+			}
+		}
+
+		.leaflet-container {
+			z-index: 1;
+			height: 100%;
+			background-color: #ffffff !important;
+
+			.calacademy-pin {
+				@include animation(fade-in 1s $easing);
+				@include border-radius(40px);
+				@include hand-cursor;
+
+				background-color: rgba(0, 0, 0, 0);
+
+				.pin-bg & {
+					background-color: rgba(0, 255, 255, .5);
+				}
+
+				.svg-container,
+				.shadow {
+					pointer-events: none;
+				}
+
+				.svg-container {
+					position: relative;
+					z-index: 2;
+
+					margin-left: auto;
+					margin-right: auto;
+					width: 51px;
+					height: 65px;
+
+					@include transition(
+						transform .3s $easing
+					);
+
+					@include calacademy-transform-origin(center, bottom);
+					@include transform(scale(.6));
+
+					svg {
+						.stroke {
+							@include transition(
+								transform .3s $easing
+							);
+
+							@include calacademy-transform-origin(center, 30%);
+						}
+					}
+				}
+
+				.shadow {
+					@include transition(
+						transform .3s $easing,
+						left .3s $easing,
+						top .3s $easing
+					);
+
+					@include transform(scale(.6));
+
+					position: absolute;
+					left: -40px;
+					top: -30px;
+					z-index: 1;
+					@include hide-text-calacademy;
+
+					width: 157px;
+					height: 140px;
+
+					background-repeat: no-repeat;
+					@include background-size(contain);
+					background-image: url($assetPath + '/gigamacro/pin-shadow.png');
+				}
+
+				&.selected {
+					.svg-container {
+						// scale up the pin
+						@include transform(scale(1));
+
+						// scale back the "stroke"
+						svg {
+							.stroke {
+								@include transform(scale(.8));
+							}
+						}
+					}
+
+					// scale and offset the shadow
+					.shadow {
+						@include transform(scale(1));
+						left: -35px;
+						top: -40px;
+					}
+				}
+			}
+		}
+
+		.leaflet-bottom.leaflet-right {
+			.leaflet-control-minimap {
+				z-index: 2;
+				
+				@include calacademy-transform-origin(bottom, right);
+				@include transform(scale(.5));  
+				@include transition(none !important);
+				@include box-shadow(none);
+				@include border-radius(0);
+				@include opacity(.975);
+
+				margin-right: 0;
+				margin-bottom: 0;
+				border: 0;
+
+				.leaflet-overlay-pane {
+					.toggle-minimap-rectangle & {
+						display: none;
+					}
+					.toggle-minimap-rectangle.zoom-gt1 & {
+						display: block;
+					}
+
+					svg {
+						g:first-child {
+							path {
+								stroke: $gigamacro-minimap-stroke;
+
+								.web & {
+									stroke: $text-link;
+								}		
+							}
+						}
+					}
+				}
+			}
+
+			.minimap-bg {
+				z-index: 1;
+				position: absolute;
+
+				@include calc(top, (50% - #{1px}), 50%);
+				@include calc(left, (50% - #{1px}), 50%);
+				
+				@include border-radius(0);
+				border: 1px solid $gigamacro-border-color;
+				border-bottom: 0;
+				border-right: 0;
+				background-color: #000000;
+			}
+
+			// toggle
+			.toggle-minimap & {
+				@include opacity(0);
+			}
+			.toggle-minimap.zoom-gt1 & {
+				@include opacity(1);
+			}
+		}
+
+		#gigamacro-sharing {
+			display: none;
+			
+			// delaying display of iframes messes with IE
+			.ie &,
+			.probably-ie &,
+			&.delay-fired {
+				display: block !important;
+
+				@include respond-to(smartphone) {
+					display: none !important;
+				}
+			}
+
+			@include animation(fade-in .6s $easing);
+			position: absolute;
+			z-index: 3;
+			left: $padding;
+			bottom: $padding;
+			
+			h3 {
+				margin: 0;
+				margin-bottom: 4px;
+				font-size: 120%;
+				line-height: 120%;
+				font-weight: $semibold;
+			}
+
+			pointer-events: none;
+
+			li {
+				pointer-events: auto;
+			}
+		}
+	}
+
+	.floor & {
+		nav {
+			display: none;
+		}
+
+		#content {
+			margin: 0 !important;
+			top: 0;
+		}	
+	}
+
+	.touch & {
+		* {
+			cursor: none !important;
+		}
+	}
+
+	.cursor & {
+		* {
+			cursor: default !important;
+		}
+	}
+
+	// smartphone
+	#smartphone-legend,
+	#smartphone-return,
+	#smartphone-legend-toggle {
+		display: none;
+	}
+
+	@include respond-to(smartphone) {
+		#leaflet-map-container {
+			@include transition(
+				transform .5s $easing
+			);
+
+			@include transform(translate3d(0, 0, 0));
+
+			.smartphone-dock-open & {
+				@include transform(translate3d(0, -50px, 0));
+			} 
+		}
+
+		.smartphone-stuff {
+			display: block !important;
+		}
+
+		#bubble,
+		#legend,
+		#fingers,
+		.slider-container,
+		.leaflet-bottom.leaflet-right {
+			display: none !important;
+		}
+
+		#content {
+			.control-reset,
+			.control-reset.active {
+				top: 0;
+				right: 0;
+				background-color: transparent !important;
+
+				padding-top: 15px;
+				padding-right: 12px;
+
+				width: 40px;
+				height: 40px;
+
+				.text-container,
+				.svg-reset {
+					display: none;
+				}
+
+				.svg-buttons {
+					&, .reset {
+						display: block;
+					}
+
+					.fill {
+						@include transform(scale(1));
+					}
+					.stroke {
+						display: none;
+					}
+				}
+			}
+		}
+
+		#smartphone-legend {
+			width: 100%;
+			position: absolute;
+			background-color: $gigamacro-legend-bg-color;
+			border-top: 1px solid $gigamacro-border-color;
+			@include hand-cursor;
+
+			z-index: 1001;
+			padding-bottom: 300px;
+
+			.smartphone-nav-open & {
+				z-index: 998;
+			}
+
+			#chevron {
+				.smartphone-dock-open & {
+					@include transform(rotate(0deg));
+				}
+
+				@include transform(rotate(180deg));
+				@include calacademy-transform-origin(center, center);
+				@include transition(
+					transform .6s $easing
+				);
+
+				float: right;
+				margin: 20px;
+				margin-top: 12px;
+
+				svg {
+					width: 20px;
+					height: 12px;
+				}
+			}
+
+			@include transition(
+				top .6s $easing,
+				transform .6s $easing
+			);
+
+			.pin_title {
+				display: none;
+			}
+
+			&, h1, h2 {
+				margin: 0;
+				@include box-sizing(border-box);
+			}
+
+			h1, h2, .dynamic {
+				padding-left: $smartphonePadding;
+				padding-right: $smartphonePadding;
+			}
+
+			h1 {
+				padding: $smartphonePadding;
+				font-size: $largeText !important;
+				line-height: $largeTextLineHeight !important;
+				color: $gigamacro-blue;
+
+				.web & {
+					color: $text-link;
+				}
+			}
+
+			h2 {
+				font-size: $smartphoneText !important;
+				line-height: $smartphoneLineHeight !important;
+
+				font-style: italic;
+				margin-top: -15px;
+				@include opacity(0);
+
+				.smartphone-dock-open & {
+					@include opacity(1);
+				}
+			}
+
+			.dynamic, h2 {
+				@include transition(
+					opacity .5s $easing
+				);
+			}
+
+			.dynamic {
+				.empty {
+					display: none;
+				}
+
+				padding-top: $smartphonePadding;
+				padding-bottom: $smartphonePadding;
+				font-size: $slightlyLargerText;
+				line-height: $slightlyLargerTextLineHeight;
+
+				.return {
+					margin-top: $smartphonePadding;
+					@include title-link(blue);
+					
+					a {
+						@include arrow(arrow-blue-left, false, false, true);
+						font-size: 16px;
+					}
+				}
+
+				.commenter {
+					.name {
+						font-weight: $semibold;
+					}
+
+					font-size: $defaultText;
+					line-height: 20px;
+					padding-top: $smartphonePadding;
+				}
+			}
+		}
+	}
+}

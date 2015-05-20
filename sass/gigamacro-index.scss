@@ -1,0 +1,317 @@
+@import "global-variables";
+
+.gigamacro-index {
+	$easing: cubic-bezier(.215,.61,.355,1);
+
+	#top-level-nav-wrapper,
+	#page-title,
+	#footer,
+	header,
+	nav {
+		display: none;
+	}
+
+	&, #index-container, #content {
+		width: 1920px;
+		height: 1080px;
+		overflow: hidden;
+	}
+
+	background-color: $gigamacro-border-color;
+	background-image: none;
+
+	#main {
+		background-color: #ffffff;
+	}
+
+	#index-container {
+		* {
+			-webkit-touch-callout: none;
+			@include user-select(none);
+			cursor: default;
+		}
+
+		h1 {
+			position: absolute;
+			margin: 0;
+			padding: 0;
+			font-weight: $light;
+
+			margin: 140px;
+			width: 350px;
+			font-size: 53px;
+			line-height: 60px;
+			letter-spacing: -1px;
+			color: $gigamacro-blue;
+		}
+
+		#gigamacro-menu {
+			padding: 0;
+
+			li {
+				width: 360px;
+				height: 500px;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+
+				&,
+				.circle,
+				img,
+				.name_container {
+					position: absolute;
+				}
+
+				.circle,
+				.name_container {
+					@include hand-cursor;
+				}
+
+				img,
+				.circle {
+					left: 0;
+
+					@include transition(
+						opacity .8s $easing,
+						transform .5s $easing,
+						left .5s $easing,
+						border-color .3s $easing
+					);
+				}
+
+				.img-container {
+					top: 0;
+					position: relative;
+					z-index: 3;
+
+					@include transition(
+						transform .9s $easing,
+						top .9s $easing
+					);
+				}
+
+				@mixin scale-from-width($w) {
+					@include transform(scale($w / 612));
+
+					&.img-over {
+						@include transform(scale(($w / 612) + .15));
+					}
+				}
+
+				img {
+					pointer-events: none;
+					max-width: inherit;
+
+					image-rendering: -webkit-optimize-contrast;
+				    image-rendering: optimize-contrast;
+
+					@include calacademy-transform-origin(center, center);
+					@include scale-from-width(360);
+				}
+
+				.circle {
+					z-index: 2;
+					top: 0;
+					left: 0;
+					
+					@include box-sizing(border-box);
+					background-color: $white;
+					border: 8px solid #ebebeb;
+					
+					width: 360px;
+					height: 360px;
+					@include border-radius(180px);
+				}
+
+				.name_container {
+					@include transform(translateZ(0));
+					display: inline-block;
+					z-index: 1;
+
+					svg, .common_name {
+						float: left;
+					}
+
+					svg {
+						@include calacademy-transform-origin(center, center);
+						@include transform(rotate(-90deg));
+						
+						width: 28px;
+						height: 28px;
+					}
+
+					div {
+						margin-left: 10px;
+						margin-top: 3px;
+						font-weight: $medium;
+						color: $gigamacro-blue;
+						font-size: 20px;
+					}
+				}
+
+				/* medium */
+				&.urchin-grid,
+				&.scarab-beetle,
+				&.weevils {
+					img {
+						@include scale-from-width(275);
+					}
+
+					.circle {
+						width: 276px;
+						height: 276px;
+						@include border-radius(138px);	
+					}
+				}
+
+				/* small */
+				&.spur-flower,
+				&.shell-grid,
+				&.damselfly,
+				&.egg-grid,
+				&.grasshopper,
+				&.sunset-moth {
+					img {
+						@include scale-from-width(240);
+					}
+
+					.circle {
+						width: 190px;
+						height: 190px;
+						@include border-radius(95px);	
+					}
+				}
+
+				/* custom overrides */
+				&.comet-moth {
+					img {
+						@include scale-from-width(500);
+					}
+
+					svg {
+						@include transform(rotate(90deg));
+					}
+				}
+				&.damselfly {
+					img {
+						@include scale-from-width(280);
+					}
+				}
+				&.feather-grid {
+					img {
+						@include scale-from-width(420);
+					}
+
+					svg {
+						@include transform(rotate(90deg));
+					}
+				}
+				&.glory-bush {
+					img {
+						@include scale-from-width(580);
+					}
+				}
+				&.grasshopper {
+					img {
+						@include scale-from-width(210);
+					}
+				}
+				&.shell-grid {
+					img {
+						@include scale-from-width(230);
+					}
+
+					svg {
+						@include transform(rotate(90deg));
+					}
+
+					svg, .common_name {
+						float: right;
+					}
+
+					.common_name {
+						margin-left: 0;
+						margin-right: 10px;
+					}
+				}
+				&.spur-flower {
+					img {
+						@include scale-from-width(300);
+					}
+				}
+				&.urchin-grid {
+					img {
+						@include scale-from-width(350);
+					}
+				}
+
+				&.over {
+					.circle {
+						@include transform(scale(1.1));
+						border-color: $gigamacro-blue;
+					}
+				}
+			}
+		}		
+	}
+
+	// transitions
+	#index-container, #content {
+		float: left;
+	}
+
+	#content {
+		z-index: 1;
+
+		#leaflet-map {
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+	}
+
+	#index-container {
+		z-index: 2;
+		background-color: #ffffff;
+
+		@include transition(
+			background-color 1.2s $easing
+		);
+
+		h1, li, .name_container, .circle {
+			@include transition(
+				opacity .8s $easing
+			);
+
+			@include opacity(1);
+
+			&.outro {
+				@include opacity(0);
+			}
+		}
+
+		&.intro {
+			background-color: #e5f4f9;
+
+			h1, li, .name_container, .circle {
+				@include opacity(1);
+			}	
+		}
+
+		&.outro {
+			background-color: #ffffff;
+			pointer-events: none;
+		}
+
+		// attract stuff
+		&.attracting {
+			li {
+				@include transition-duration(5s);
+
+				&.attract-fade-out {
+					@include transition-duration(3s);
+					@include opacity(0);
+				}
+			}
+		}
+	}
+}

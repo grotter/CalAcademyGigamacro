@@ -1,0 +1,149 @@
+<?php
+
+define('GIGAMACRO_INDEX_PATH', 'gigamacro-floor');
+define('GIGAMACRO_TOUCH_TEST_PATH', 'touch-test');
+
+// /**
+//  * Hack admin view to show unpublished content
+//  * @author grotter
+//  *
+//  */
+// function calacademy_gigamacro_views_pre_execute(&$view) {
+//   if ($view->name != 'administration_gigamacro_nodes') return;
+//   drupal_set_message($view->build_info['query']);
+// }
+
+/**
+ * Tell Drupal to also look for template files in the modules folder
+ * implements hook_theme_registry_alter
+ *
+ * @param $theme_registry
+ */
+function calacademy_gigamacro_theme_registry_alter(&$theme_registry) {
+  $path  = drupal_get_path('module', 'calacademy_gigamacro') . '/templates';
+  $theme_registry += drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+}
+
+function calacademy_gigamacro_preprocess_node(&$vars) {
+  if ($vars['type'] != 'gigamacro_specimen') return;
+  if ($vars['view_mode'] != 'full') return;
+
+  $vars['theme_hook_suggestions'][] = 'node__gigamacro_specimen';
+}
+
+/**
+ * Force WYSIWYG on summary in specimen editor
+ * @author grotter
+ *
+ */
+function calacademy_gigamacro_field_widget_text_textarea_with_summary_form_alter(&$element, &$form_state, $context) {
+  if ($element['#field_name'] == 'body' && $element['#bundle'] == 'gigamacro_specimen') {
+    if (isset($element['summary'])) $element['summary']['#wysiwyg'] = true;  
+  }
+}
+
+/**
+ * Add a drag-and-drop interface for pins
+ * Implements hook_form_alter(&$form, &$form_state, $form_id)
+ * @author grotter
+ *
+ * @param $form: Nested array of form elements that comprise the form.
+ * @param $form_state: A keyed array containing the current state of the form.
+ *        The arguments that drupal_get_form() was originally called with are
+ *        available in the array $form_state['build_info']['args'].
+ * @param $form_id: String representing the name of the form itself. Typically
+ *        this is the name of the function that generated the form.
+ */
+
+function calacademy_gigamacro_form_alter(&$form, &$form_state, $form_id) {
+    switch ($form_id) {
+        case 'gigamacro_pin_node_form':
+        case 'gigamacro_specimen_node_form':
+            // workaround for hook not firing after form validation fails
+            // @see https://www.drupal.org/node/671574
+            $form_state['no_cache'] = TRUE;
+            break;
+    }
+
+    // set up pin UI
+    if ($form_id == 'gigamacro_pin_node_form' && isset($form['field_geolocation'])) {
+        $libPath = libraries_get_path('leaflet');
+        drupal_add_css($libPath . '/css/leaflet.css');
+        drupal_add_js($libPath . '/js/leaflet.js');
+        drupal_add_js($libPath . '/js/leaflet-hacks.js');
+
+        $modulePath = drupal_get_path('module', 'calacademy_gigamacro');
+        drupal_add_css($modulePath . '/css/calacademy_gigamacro_pin.css');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_static.js');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_pin.js');
+        
+        drupal_add_js('jQuery(document).ready(function () { var foo = new CalAcademyGigamacroPin(); });', 'inline');
+    }
+
+    if ($form_id == 'gigamacro_specimen_node_form') {
+        $modulePath = drupal_get_path('module', 'calacademy_gigamacro');
+        drupal_add_css($modulePath . '/css/calacademy_gigamacro_specimen.css');
+    }
+}
+
+function calacademy_gigamacro_preprocess_html(&$vars) {
+    if (in_array('node-type-gigamacro-specimen', $vars['classes_array'])) {
+        $vars['minimalUI'] = true;    
+    }
+
+    if (request_path() == GIGAMACRO_INDEX_PATH) {
+        $vars['classes_array'][] = 'gigamacro-index';
+    }
+}
+
+function calacademy_gigamacro_boot() {
+    if (request_path() == GIGAMACRO_TOUCH_TEST_PATH) {
+        header('Location: /sites/all/modules/custom/calacademy_gigamacro/touch-test/index.html');
+        exit;
+    }
+}
+
+function calacademy_gigamacro_preprocess_page(&$page) {
+    // some stuff for the specimen viewer
+    global $theme;
+    if ($theme != 'calacademy_zen') return;
+
+    $isIndex = (request_path() == GIGAMACRO_INDEX_PATH);
+    if ($isIndex) http_response_code(200);
+    
+    $node = $page['node'];
+
+    if ($isIndex || $node->type == 'gigamacro_specimen') {
+        $modulePath = drupal_get_path('module', 'calacademy_gigamacro');
+        $libPath = libraries_get_path('leaflet');
+
+        // leaflet
+        drupal_add_css($libPath . '/css/leaflet.css');
+        drupal_add_js($libPath . '/js/leaflet.js');
+        drupal_add_js($libPath . '/js/leaflet-hacks.js');
+        
+        // leaflet minimap
+        drupal_add_css($libPath . '/css/Control.MiniMap.min.css');
+        drupal_add_js($libPath . '/js/Control.MiniMap.js');
+
+        // jquery slider
+        drupal_add_css($libPath . '/css/jquery-ui-slider.min.css');
+        drupal_add_js($libPath . '/js/jquery-ui-slider.min.js');
+
+        drupal_add_css(path_to_theme() . '/css/calacademy/node-type-gigamacro-specimen.css');
+        drupal_add_css(path_to_theme() . '/css/calacademy/gigamacro-index.css');
+        
+        drupal_add_js($modulePath . '/js/idle-timer.min.js');
+        drupal_add_js($modulePath . '/js/jquery.touch.js');
+        drupal_add_js($modulePath . '/js/jquery.overlaps.js');
+        drupal_add_js($modulePath . '/js/jquery.draggable.min.js');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_static.js');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_index.js');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_slider.js');
+        drupal_add_js($modulePath . '/js/calacademy_gigamacro_viewer.js');
+        
+        $arg = $isIndex ? 'null' : drupal_json_encode($node);
+
+        drupal_add_js('jQuery(document).ready(function () { var foo = new CalAcademyGigamacroViewer(' . $arg . '); });', 'inline');
+    }
+}

@@ -1,0 +1,73 @@
+$assetPath : "/sites/all/themes/calacademy_zen/images";
+$maxWidth: 960px;
+$padding: 20px;
+$smartphonePadding: 12px;
+$squareWidth: 220px;
+$squareWidthTablet: 167px;
+
+$navHeight: 92px;
+$smartphoneNavHeight: 56px;
+$topLevelNavPadding: 12px;
+$topLevelNavHeight: 36px;
+
+// font sizes
+$smallText: 12px;
+$smallTextLineHeight: 18px;
+
+$defaultText: 14px;
+$defaultLineHeight: 22px;
+
+$scienceTodayMedium: 20px;
+$scienceTodayMediumLineHeight: 24px;
+
+$scienceTodayLarge: 32px;
+$scienceTodayLargeLineHeight: 36px;
+
+$slightlyLargerText: 16px;
+$slightlyLargerTextLineHeight: 24px;
+
+$slightlyLargerHeaderText: 22px;
+$slightlyLargerHeaderTextLineHeight: 28px;
+
+$largeText: 24px;
+$largeTextLineHeight: 32px;
+
+$tabletNavText: 20px;
+
+$smartphoneText: 18px;
+$smartphoneLineHeight: 26px;
+
+$biggerText: 18px;
+$biggerTextLineHeight: 26px;
+
+// headers
+$headerSubheadText: 20px;
+$headerText: 50px;
+$headerTextLineHeight: 50px;
+$headerTextReduced: 36px;
+$headerTextReducedLineHeight: 38px;
+$headerTextSmall: 16px;
+
+$headerSubheadTextSmartphone: 20px;
+$headerSubheadTextSmartphoneLineHeight: 26px;
+$headerTextSmartphone: 36px;
+$headerTextSmartphoneLineHeight: 36px;
+$headerTextSmallSmartphone: 18px;
+
+$sectionTitleSmartphone: 28px;
+$sectionTitleSmartphoneLineHeight: 32px;
+
+// font weights
+$light: 300;
+$book: 400;
+$medium: 500;
+$semibold: 600;
+$bold: 700;
+
+// breakpoints
+$breakSmartphone: 320px;
+$breakTablet: 768px;
+$breakDesktop: 1000px;
+
+@import "_colors";
+@import "_mixins";
